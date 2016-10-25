@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            border: 0;
+        }
+
+        .all {
+            width: 500px;
+            height: 200px;
+            padding: 7px;
+            border: 1px solid #ccc;
+            margin: 100px auto;
+            position: relative;
+        }
+
+        .screen {
+            width: 500px;
+            height: 200px;
+            /*overflow: hidden;*/
+            position: relative;
+        }
+
+        .screen li {
+            width: 500px;
+            height: 200px;
+            overflow: hidden;
+            float: left;
+        }
+
+        .screen ul {
+            position: absolute;
+            left: 0;
+            top: 0px;
+            width: 3000px;
+        }
+
+        .all ol {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            line-height: 20px;
+            text-align: center;
+        }
+
+        .all ol li {
+            float: left;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border: 1px solid #ccc;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .all ol li.current {
+            background: yellow;
+        }
+
+        #arr {
+            display: none;
+        }
+
+        #arr span {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            margin-top: -20px;
+            background: #000;
+            cursor: pointer;
+            line-height: 40px;
+            text-align: center;
+            font-weight: bold;
+            font-family: '黑体';
+            font-size: 30px;
+            color: #fff;
+            opacity: 0.3;
+            border: 1px solid #fff;
+        }
+
+        #arr #right {
+            right: 5px;
+            left: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="all" id='box'>
+    <div class="screen">
+        <ul>
+            <li><img src="images/1.jpg" width="500" height="200"/></li>
+            <li><img src="images/2.jpg" width="500" height="200"/></li>
+            <li><img src="images/3.jpg" width="500" height="200"/></li>
+            <li><img src="images/4.jpg" width="500" height="200"/></li>
+            <li><img src="images/5.jpg" width="500" height="200"/></li>
+        </ul>
+        <ol>
+        </ol>
+    </div>
+    <div id="arr"><span id="left">&lt;</span><span id="right">&gt;</span></div>
+</div>
+<script>
+    //--------------------- 1 获取页面元素 ---------------------
+    var box = document.getElementById("box");
+    var screen = box.children[0];
+    var ul = screen.children[0];
+    var lisUl = ul.children;
+    var ol = screen.children[1];
+    var arr = box.children[1];
+    var arrRight = arr.children[1];
+    var arrLeft = arr.children[0];
+    var imgWidth = screen.offsetWidth;
+    var timer = null;
+
+
+    //--------------------- 2 动态创建部分 ---------------------
+    for (var i = 0; i < lisUl.length; i++) {
+        var li = document.createElement("li");
+        li.innerHTML = i + 1;
+        ol.appendChild(li);
+    }
+
+    var lisOl = ol.children;
+    ol.children[0].className = "current";
+    for (var i = 0; i < lisOl.length; i++) {
+        lisOl[i].index = i;
+        lisOl[i].onclick = function () {
+            if (pic == lisUl.length - 1) {
+                ul.style.left = 0;
+            }
+            for (var i = 0; i < lisOl.length; i++) {
+                lisOl[i].className = "";
+            }
+            this.className = "current";
+            var target = -this.index * imgWidth;
+            animate(ul, target);
+            pic = this.index;
+        };
+    }
+    var firstPic = lisUl[0].cloneNode(true);
+    ul.appendChild(firstPic);
+
+
+    var pic = 0;
+    arrRight.onclick = function () {
+        if (pic == lisUl.length - 1) {
+            ul.style.left = 0;
+            pic = 0;
+        }
+        pic++;
+        animate(ul, -pic * imgWidth);
+
+        for (var i = 0; i < lisOl.length; i++) {
+            lisOl[i].className = "";
+        }
+//        console.log(pic == ul.length - 1);
+        if (pic == lisUl.length - 1) {
+            lisOl[0].className = "current";
+//            console.log(1);
+        } else {
+            lisOl[pic].className = "current";
+        }
+    };
+
+    arrLeft.onclick = function () {
+        if (pic == 0) {
+//            console.log(1);
+            ul.style.left = -ul.offsetWidth + lisUl[0].offsetWidth + "px";
+            pic = lisUl.length - 1;
+        }
+        pic--;
+        animate(ul, -pic * imgWidth);
+
+        for (var i = 0; i < lisOl.length; i++) {
+            lisOl[i].className = "";
+        }
+//        console.log(pic == ul.length - 1);
+//        if (pic == -1) {
+//            lisOl[lisOl.length - 1].className = "current";
+////            console.log(1);
+//        } else {
+            lisOl[pic].className = "current";
+//        }
+    }
+
+    timer = setInterval(play, 1000);
+
+    box.onmouseover = function () {
+        arr.style.display = "block";
+        //清除定时器，停止自动播放
+        clearInterval(timer);
+    };
+    box.onmouseout = function () {
+        arr.style.display = "none";
+        timer = setInterval(play, 1000);
+    };
+
+    function play() {
+        if (pic == lisUl.length - 1) {
+            ul.style.left = 0;
+            pic = 0;
+        }
+        pic++;
+        animate(ul, -pic * imgWidth);
+
+        for (var i = 0; i < lisOl.length; i++) {
+            lisOl[i].className = "";
+        }
+//        console.log(pic == ul.length - 1);
+        if (pic == lisUl.length - 1) {
+            lisOl[0].className = "current";
+//            console.log(1);
+        } else {
+            lisOl[pic].className = "current";
+        }
+    }
+
+
+    //运动函数
+    function animate(tag, target) {
+        clearInterval(tag.timer);
+        tag.timer = setInterval(function () {
+            //对象当前位置=对象当前位置+要移动的长度
+            //leader = leader + step
+            var leader = tag.offsetLeft;
+            var step = 9;
+            //对step的正负进行判断。如果leader小于target，就是正的，如果大于target，step为负值
+            step = leader > target ? -step : step;
+            //当leader和target的距离小于一步时，我们不能让他正常走，可以直接将tag的位置设置为target，然后清除定时器
+            if (Math.abs(leader - target) < Math.abs(step)) {
+                tag.style.left = target + "px";
+                clearInterval(tag.timer);
+            } else {
+                //最好最后一步
+                leader = leader + step;
+                tag.style.left = leader + "px";
+            }
+        }, 7);
+    }
+
+</script>
+</body>
+</html>
